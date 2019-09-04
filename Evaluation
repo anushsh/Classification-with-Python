@@ -1,0 +1,64 @@
+from sklearn.metrics import jaccard_similarity_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import log_loss
+
+!wget -O loan_test.csv https://s3-api.us-geo.objectstorage.softlayer.net/cf-courses-data/CognitiveClass/ML0101ENv3/labs/loan_test.csv
+
+test_df = pd.read_csv('loan_test.csv')
+test_df.head()
+
+test_df = pd.read_csv('loan_test.csv')
+test_df['effective_date'] = pd.to_datetime(test_df['effective_date'])
+test_df['due_date'] = pd.to_datetime(test_df['due_date'])
+test_df['loan_status'].value_counts()
+test_df['dayofweek'] = test_df['effective_date'].dt.dayofweek
+test_df['weekend'] = test_df['dayofweek'].apply(lambda x: 1 if (x>3)  else 0)
+test_df['Gender'].replace(to_replace=['male','female'], value=[0,1],inplace=True)
+test_df.head()
+Features = test_df[['Principal','terms','age','Gender','weekend']]
+Features = pd.concat([Features,pd.get_dummies(test_df['education'])], axis=1)
+Features.drop(['Master or Above'], axis = 1,inplace=True)
+X_t = Features
+X_t= preprocessing.StandardScaler().fit(X_t).transform(X_t)
+y_t = test_df['loan_status'].values
+Features.head()
+
+from sklearn.metrics import jaccard_similarity_score
+from sklearn.metrics import classification_report, confusion_matrix
+import itertools
+from sklearn.metrics import log_loss
+#KNN Evaluation
+yy = neighbor.predict(X_t)
+jKNN = jaccard_similarity_score(y_t,yy)
+print("Jaccard KNN: ", jaccard_similarity_score(y_t,yy))
+fKNN = f1_score(y_t, yy, average='weighted') 
+print("f1-KNN: ", fKNN)
+
+#Decision Tree Evaluation 
+y1 = loanTree.predict(X_t)
+jDT = jaccard_similarity_score(y_t,y1)
+print("Jaccard DT: ", jaccard_similarity_score(y_t,y1))
+fDT = f1_score(y_t, y1, average='weighted') 
+print("f1-DT: ", fDT)
+
+#SVM Evaluation
+y_alpha = clf.predict(X_t)
+jSVM = jaccard_similarity_score(y_t,y_alpha)
+print("Jaccard SVM: ", jaccard_similarity_score(y_t,y_alpha))
+fSVM = f1_score(y_t, y_alpha, average='weighted') 
+print("f1-SVM: ", fSVM)
+
+#Log Regression Evaluation
+y_beta = LR.predict(X_t)
+jLR = jaccard_similarity_score(y_t, y_beta)
+print("Jaccard SVM: ", jaccard_similarity_score(y_t,y_beta))
+fLR = f1_score(y_t, y_beta, average='weighted') 
+print("f1-SVM: ", fLR)
+y_hat2 = LR.predict_proba(X_t)
+LL = log_loss(y_t, y_hat2)
+print("Log Loss SVM: ", LL)
+
+result = [[jKNN,fKNN,"N/A"],[jDT,fDT,"N/A"],[jSVM,fSVM,"N/A"],[jLR, fLR,LL]]
+result_df = pd.DataFrame(result,index=["KNN","Decision Tree","SVM","LogisticRegression"],columns=["Jaccard", "F1-Score", "LogLoss"])
+print (result_df)
+
