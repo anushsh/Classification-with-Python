@@ -1,0 +1,12 @@
+from sklearn.tree import DecisionTreeClassifier
+X_trainset, X_testset, y_trainset, y_testset = train_test_split(X,y, test_size = 0.3, random_state = 3)
+loanTree = DecisionTreeClassifier(criterion="entropy", max_depth = 4)
+loanTree.fit(X_trainset, y_trainset)
+
+predictTree = loanTree.predict(X_testset)
+print (predictTree [0:5])
+print (y_testset [0:5])
+
+from sklearn import metrics
+import matplotlib.pyplot as plt
+print("DecisionTrees's Accuracy: ", metrics.accuracy_score(y_testset, predictTree))
